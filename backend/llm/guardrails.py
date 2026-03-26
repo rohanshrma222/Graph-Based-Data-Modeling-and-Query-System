@@ -1,33 +1,16 @@
 from __future__ import annotations
 
-from backend.llm.client import call_llm
+try:
+    from backend.llm.client import call_llm
+except ModuleNotFoundError:
+    from llm.client import call_llm
 
 
 ALLOWED_TOPICS = {
-    "orders",
-    "order",
-    "deliveries",
-    "delivery",
-    "invoices",
-    "invoice",
-    "payments",
-    "payment",
-    "customers",
-    "customer",
-    "products",
-    "product",
-    "billing",
-    "supply chain",
-    "logistics",
-    "finance",
-    "billing documents",
-    "plants",
-    "plant",
+    "orders", "order", "deliveries", "delivery", "invoices", "invoice", "payments", "payment", "customers", "customer", "products", "product", "billing", "supply chain", "logistics", "finance", "billing documents", "plants", "plant",
 }
 
-OFF_TOPIC_MESSAGE = (
-    "This system is designed to answer questions related to the provided dataset only."
-)
+OFF_TOPIC_MESSAGE = "This system is designed to answer questions related to the provided dataset only."
 
 
 def _keyword_match(question: str) -> bool:

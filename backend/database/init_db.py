@@ -6,8 +6,12 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any, Iterable
 
-from backend.config import settings
-from backend.database.models import TABLE_SCHEMAS, build_create_table_sql
+try:
+    from backend.config import settings
+    from backend.database.models import TABLE_SCHEMAS, build_create_table_sql
+except ModuleNotFoundError:
+    from config import settings
+    from database.models import TABLE_SCHEMAS, build_create_table_sql
 
 
 RAW_DIRECTORIES = {

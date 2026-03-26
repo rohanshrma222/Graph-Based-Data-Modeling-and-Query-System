@@ -3,10 +3,16 @@ from __future__ import annotations
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.database.init_db import init_db
-from backend.graph.builder import get_graph
-from backend.routers.graph import router as graph_router
-from backend.routers.query import router as query_router
+try:
+    from backend.database.init_db import init_db
+    from backend.graph.builder import get_graph
+    from backend.routers.graph import router as graph_router
+    from backend.routers.query import router as query_router
+except ModuleNotFoundError:
+    from database.init_db import init_db
+    from graph.builder import get_graph
+    from routers.graph import router as graph_router
+    from routers.query import router as query_router
 
 
 app = FastAPI(title="Graph-Based Data Modeling and Query System")

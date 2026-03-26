@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Query
 
-from backend.graph.builder import get_graph, get_node_neighbors, get_subgraph, serialize_graph
+try:
+    from backend.graph.builder import get_graph, get_node_neighbors, get_subgraph, serialize_graph
+except ModuleNotFoundError:
+    from graph.builder import get_graph, get_node_neighbors, get_subgraph, serialize_graph
 
 
 router = APIRouter(prefix="/api/graph", tags=["graph"])

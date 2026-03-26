@@ -7,34 +7,25 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from backend.config import settings
-from backend.database.models import schema_summary
-from backend.graph.builder import get_graph
-from backend.llm.client import call_llm
-from backend.llm.guardrails import OFF_TOPIC_MESSAGE, is_relevant_query
-from backend.llm.prompt import build_answer_prompt, build_sql_prompt
+try:
+    from backend.config import settings
+    from backend.database.models import schema_summary
+    from backend.graph.builder import get_graph
+    from backend.llm.client import call_llm
+    from backend.llm.guardrails import OFF_TOPIC_MESSAGE, is_relevant_query
+    from backend.llm.prompt import build_answer_prompt, build_sql_prompt
+except ModuleNotFoundError:
+    from config import settings
+    from database.models import schema_summary
+    from graph.builder import get_graph
+    from llm.client import call_llm
+    from llm.guardrails import OFF_TOPIC_MESSAGE, is_relevant_query
+    from llm.prompt import build_answer_prompt, build_sql_prompt
 
 
 router = APIRouter(prefix="/api/query", tags=["query"])
 
-READ_ONLY_BLOCKLIST = {
-    "insert",
-    "update",
-    "delete",
-    "drop",
-    "alter",
-    "create",
-    "replace",
-    "truncate",
-    "attach",
-    "detach",
-    "pragma",
-    "vacuum",
-    "begin",
-    "commit",
-    "rollback",
-}
-
+READ_ONLY_BLOCKLIST = {"insert", "update", "delete", "drop", "alter", "create", "replace", "truncate", "attach", "detach", "pragma", "vacuum", "begin", "commit", "rollback"}
 ID_PATTERN = re.compile(r"\b(?:CUST|ORD|ITEM|MAT|PROD|DEL|BIL|INV|PAY|PLANT)-?[A-Z0-9]+\b", re.IGNORECASE)
 
 
@@ -119,15 +110,10 @@ def run_query(payload: QueryRequest) -> QueryResponse:
             raise HTTPException(status_code=400, detail=str(retry_validation_error)) from retry_validation_error
         except Exception as retry_error:
             raise HTTPException(status_code=500, detail=str(retry_error)) from retry_error
-    
+
     try:
         answer = call_llm(build_answer_prompt(question, sql, results))
     except Exception as answer_error:
         raise HTTPException(status_code=500, detail=str(answer_error)) from answer_error
 
-    return QueryResponse(
-        answer=answer,
-        sql=sql,
-        results=results,
-        nodes_referenced=extract_nodes_referenced(results),
-    )
+    return QueryResponse(answer=answer, sql=sql, results=results, nodes_referenced=extract_nodes_referenced(results))

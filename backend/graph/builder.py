@@ -5,7 +5,10 @@ from typing import Any
 
 import networkx as nx
 
-from backend.config import settings
+try:
+    from backend.config import settings
+except ModuleNotFoundError:
+    from config import settings
 
 
 _GRAPH: nx.DiGraph | None = None
@@ -63,55 +66,27 @@ def build_graph() -> nx.DiGraph:
 
     for order in tables["orders"]:
         if order.get("customer_id") and order.get("id"):
-            graph.add_edge(
-                _node_key("Customer", order["customer_id"]),
-                _node_key("Order", order["id"]),
-                relationship="PLACED",
-            )
+            graph.add_edge(_node_key("Customer", order["customer_id"]), _node_key("Order", order["id"]), relationship="PLACED")
 
     for item in tables["order_items"]:
         if item.get("order_id") and item.get("id"):
-            graph.add_edge(
-                _node_key("Order", item["order_id"]),
-                _node_key("OrderItem", item["id"]),
-                relationship="CONTAINS",
-            )
+            graph.add_edge(_node_key("Order", item["order_id"]), _node_key("OrderItem", item["id"]), relationship="CONTAINS")
         if item.get("product_id") and item.get("id"):
-            graph.add_edge(
-                _node_key("OrderItem", item["id"]),
-                _node_key("Product", item["product_id"]),
-                relationship="IS_FOR",
-            )
+            graph.add_edge(_node_key("OrderItem", item["id"]), _node_key("Product", item["product_id"]), relationship="IS_FOR")
 
     for delivery in tables["deliveries"]:
         if delivery.get("order_id") and delivery.get("id"):
-            graph.add_edge(
-                _node_key("Order", delivery["order_id"]),
-                _node_key("Delivery", delivery["id"]),
-                relationship="HAS_DELIVERY",
-            )
+            graph.add_edge(_node_key("Order", delivery["order_id"]), _node_key("Delivery", delivery["id"]), relationship="HAS_DELIVERY")
         if delivery.get("plant") and delivery.get("id"):
-            graph.add_edge(
-                _node_key("Delivery", delivery["id"]),
-                _node_key("Plant", delivery["plant"]),
-                relationship="SHIPPED_FROM",
-            )
+            graph.add_edge(_node_key("Delivery", delivery["id"]), _node_key("Plant", delivery["plant"]), relationship="SHIPPED_FROM")
 
     for invoice in tables["invoices"]:
         if invoice.get("order_id") and invoice.get("id"):
-            graph.add_edge(
-                _node_key("Order", invoice["order_id"]),
-                _node_key("Invoice", invoice["id"]),
-                relationship="HAS_INVOICE",
-            )
+            graph.add_edge(_node_key("Order", invoice["order_id"]), _node_key("Invoice", invoice["id"]), relationship="HAS_INVOICE")
 
     for payment in tables["payments"]:
         if payment.get("invoice_id") and payment.get("id"):
-            graph.add_edge(
-                _node_key("Invoice", payment["invoice_id"]),
-                _node_key("Payment", payment["id"]),
-                relationship="SETTLED_BY",
-            )
+            graph.add_edge(_node_key("Invoice", payment["invoice_id"]), _node_key("Payment", payment["id"]), relationship="SETTLED_BY")
 
     return graph
 
@@ -124,23 +99,8 @@ def get_graph(refresh: bool = False) -> nx.DiGraph:
 
 
 def serialize_graph(graph: nx.DiGraph) -> dict[str, list[dict[str, Any]]]:
-    nodes = [
-        {
-            "id": node_id,
-            "type": attrs.get("type"),
-            "label": attrs.get("label"),
-            "metadata": attrs.get("metadata", {}),
-        }
-        for node_id, attrs in graph.nodes(data=True)
-    ]
-    edges = [
-        {
-            "source": source,
-            "target": target,
-            "relationship": attrs.get("relationship"),
-        }
-        for source, target, attrs in graph.edges(data=True)
-    ]
+    nodes = [{"id": node_id, "type": attrs.get("type"), "label": attrs.get("label"), "metadata": attrs.get("metadata", {})} for node_id, attrs in graph.nodes(data=True)]
+    edges = [{"source": source, "target": target, "relationship": attrs.get("relationship")} for source, target, attrs in graph.edges(data=True)]
     return {"nodes": nodes, "edges": edges}
 
 
@@ -157,11 +117,7 @@ def get_node_neighbors(node_id: str) -> dict[str, Any]:
     for source, target, attrs in graph.out_edges(node_id, data=True):
         edges.append({"source": source, "target": target, **attrs})
 
-    return {
-        "node": {"id": node_id, **graph.nodes[node_id]},
-        "neighbors": neighbors,
-        "edges": edges,
-    }
+    return {"node": {"id": node_id, **graph.nodes[node_id]}, "neighbors": neighbors, "edges": edges}
 
 
 def get_subgraph(node_ids: list[str]) -> nx.DiGraph:
