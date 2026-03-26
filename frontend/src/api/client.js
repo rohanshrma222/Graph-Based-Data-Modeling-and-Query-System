@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000/api';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000').replace(/\/$/, '');
+const BASE_URL = `${API_BASE}/api`;
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -34,7 +35,7 @@ export const sendQuery = async (question, conversationHistory = []) => {
 };
 
 export const fetchHealth = async () => {
-  const { data } = await axios.get('http://localhost:8000/health', { timeout: 10000 });
+  const { data } = await axios.get(`${API_BASE}/health`, { timeout: 10000 });
   return data;
 };
 
