@@ -21,6 +21,7 @@ load_dotenv(ENV_PATH)
 @dataclass(frozen=True)
 class Settings:
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "Gemini 2.5 Flash")
     database_url: str = os.getenv(
         "DATABASE_URL",
         f"sqlite:///{(PROJECT_ROOT / 'backend' / 'app.db').as_posix()}",
