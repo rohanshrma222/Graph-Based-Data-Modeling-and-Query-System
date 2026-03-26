@@ -1,14 +1,11 @@
 export function Header({ backendConnected }) {
   return (
-    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-4">
-      <div className="flex items-center gap-3 text-sm text-slate-400">
-        <div className="flex h-6 w-6 items-center justify-center rounded-md border border-slate-300 bg-slate-50 text-slate-700">
-          <span className="text-[11px]">?</span>
-        </div>
-        <span>Mapping</span>
-        <span>/</span>
-        <span className="font-semibold text-slate-800">Order to Cash</span>
-      </div>
+    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2">
+      
+        
+          <img alt="Raw AI" className="h-12 w-16 object-contain" src="/RAI.png" />
+       
+      
 
       <div className="flex items-center gap-4">
         <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-medium text-slate-500">

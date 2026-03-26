@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import clsx from 'clsx';
 
 import { fetchHealth } from './api/client';
 import { ChatPanel } from './components/ChatPanel/ChatPanel';
@@ -25,7 +26,6 @@ export default function App() {
     loadGraph,
     selectNode,
     highlightNodes,
-    clearHighlights,
     clearSelectedNode,
     setGraphData,
   } = useGraph();
@@ -34,6 +34,7 @@ export default function App() {
   const [backendConnected, setBackendConnected] = useState(false);
   const [backendBanner, setBackendBanner] = useState('');
   const [lastUpdated, setLastUpdated] = useState('');
+  const [isGraphExpanded, setIsGraphExpanded] = useState(false);
 
   useEffect(() => {
     const pingBackend = async () => {
@@ -105,25 +106,44 @@ export default function App() {
 
         <div className="min-h-0 flex-1 p-3">
           <div className="flex h-full min-h-0 overflow-hidden rounded-none border border-slate-200 bg-white">
-            <Sidebar graphData={memoizedGraphData} lastUpdated={lastUpdated} />
-            <GraphView
-              graphData={memoizedGraphData}
-              highlightedNodes={highlightedNodes}
-              loading={loading}
-              onClearHighlights={clearHighlights}
-              onClosePanel={clearSelectedNode}
-              onRetry={loadGraph}
-              onSelectNode={handleSelectNode}
-              selectedNode={selectedNode}
-              error={error}
-            />
-            <ChatPanel
-              loading={chatLoading}
-              messages={messages}
-              onClearChat={clearChat}
-              onHighlightNodes={highlightNodes}
-              onSendMessage={handleSendMessage}
-            />
+            <div
+              className={clsx(
+                'transition-all duration-300 ease-out',
+                isGraphExpanded ? 'pointer-events-none w-0 -translate-x-4 opacity-0' : 'w-[20%] min-w-[230px] translate-x-0 opacity-100'
+              )}
+            >
+              <Sidebar graphData={memoizedGraphData} lastUpdated={lastUpdated} />
+            </div>
+
+            <div className="min-w-0 flex-1 transition-all duration-300 ease-out">
+              <GraphView
+                error={error}
+                graphData={memoizedGraphData}
+                highlightedNodes={highlightedNodes}
+                isExpanded={isGraphExpanded}
+                loading={loading}
+                onClosePanel={clearSelectedNode}
+                onRetry={loadGraph}
+                onSelectNode={handleSelectNode}
+                onToggleExpand={() => setIsGraphExpanded((value) => !value)}
+                selectedNode={selectedNode}
+              />
+            </div>
+
+            <div
+              className={clsx(
+                'transition-all duration-300 ease-out',
+                isGraphExpanded ? 'pointer-events-none w-0 translate-x-4 opacity-0' : 'w-[26%] min-w-[300px] translate-x-0 opacity-100'
+              )}
+            >
+              <ChatPanel
+                loading={chatLoading}
+                messages={messages}
+                onClearChat={clearChat}
+                onHighlightNodes={highlightNodes}
+                onSendMessage={handleSendMessage}
+              />
+            </div>
           </div>
         </div>
       </div>

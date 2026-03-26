@@ -25,6 +25,7 @@ body {
   background:
     radial-gradient(circle at 20% 20%, rgba(191, 219, 254, 0.2), transparent 22%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.98));
+  transition: background 220ms ease, transform 220ms ease;
 }
 
 * {

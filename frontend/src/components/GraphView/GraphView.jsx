@@ -53,9 +53,10 @@ export function GraphView({
   highlightedNodes,
   loading,
   error,
+  isExpanded,
+  onToggleExpand,
   onRetry,
   onSelectNode,
-  onClearHighlights,
   onClosePanel,
 }) {
   const cyRef = useRef(null);
@@ -93,6 +94,18 @@ export function GraphView({
     });
   }, [elements]);
 
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy) {
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      cy.resize();
+      cy.fit(cy.elements(), 36);
+    });
+  }, [isExpanded]);
+
   const attachCy = (cy) => {
     if (cyRef.current === cy) {
       return;
@@ -120,13 +133,12 @@ export function GraphView({
 
   const zoomIn = () => cyRef.current?.zoom({ level: (cyRef.current?.zoom() || 1) * 1.2, renderedPosition: { x: 300, y: 240 } });
   const zoomOut = () => cyRef.current?.zoom({ level: (cyRef.current?.zoom() || 1) * 0.8, renderedPosition: { x: 300, y: 240 } });
-  const fit = () => cyRef.current?.fit(cyRef.current?.elements(), 36);
 
   return (
     <section className="relative flex h-full min-w-0 flex-1 flex-col border-r border-slate-200 bg-white">
       <GraphControls
-        onFit={fit}
-        onResetHighlights={onClearHighlights}
+        isExpanded={isExpanded}
+        onToggleExpand={onToggleExpand}
         onZoomIn={zoomIn}
         onZoomOut={zoomOut}
       />

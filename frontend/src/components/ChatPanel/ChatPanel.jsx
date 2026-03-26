@@ -22,10 +22,9 @@ export function ChatPanel({ messages, loading, onClearChat, onHighlightNodes, on
   }, [messages, loading]);
 
   return (
-    <aside className="flex h-full w-[26%] min-w-[300px] flex-col border-l border-slate-200 bg-[#fbfbfb]">
+    <aside className="flex h-full w-full flex-col border-l border-slate-200 bg-[#fbfbfb]">
       <div className="border-b border-slate-200 px-4 py-3">
         <div className="text-sm font-semibold text-slate-800">Chat with Graph</div>
-        <div className="mt-1 text-xs text-slate-500">Order to Cash</div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4" ref={scrollRef}>
